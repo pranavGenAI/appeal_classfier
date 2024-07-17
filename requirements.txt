@@ -1,6 +1,5 @@
 paddlepaddle
 paddleocr
-opencv-python-headless
 streamlit_extras
 faiss-cpu==1.8.0
 gitdb==4.0.11
