@@ -51,7 +51,7 @@ def login():
         if st.button("Sign in"):
             hashed_password = hash_password(password)
             if username in users and users[username] == hashed_password:
-                
+                st.session_state.logged_in = True
                 st.success("Logged in successfully!")
                 st.experimental_rerun()  # Refresh to show logged-in state
                 
@@ -76,8 +76,6 @@ def logout():
     # Clear session state on logout
     st.session_state.logged_in = False
     del st.session_state.username
-    del st.session_state.tokens_remaining
-    del st.session_state.tokens_consumed
     st.success("Logged out successfully!")
     st.experimental_rerun()  # Refresh to show logged-out state
 
