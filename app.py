@@ -73,6 +73,9 @@ def user_input(user_question, api_key):
 
 def main():
     st.markdown("")
+    st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
+    st.title("Upload Appeal:")
+    pdf_docs = st.file_uploader("Upload appeal document in PDF format and Click on the Submit & Process Button", accept_multiple_files=True, key="pdf_uploader")
     
     if st.button("Classify the document", key="classify_button", help="Click to classify the document"):
         user_question = "Categorize the appeal"
@@ -113,14 +116,6 @@ def extract_images_from_pdf(pdf_path):
             image_bytes = base_image["image"]
             images.append(image_bytes)
     return images
-
-
-
-with st.sidebar:
-    st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
-    st.title("Upload Appeal:")
-    pdf_docs = st.file_uploader("Upload appeal document in PDF format and Click on the Submit & Process Button", accept_multiple_files=True, key="pdf_uploader")
-    #pdf_docs = ["C:/Users/pranav.baviskar/Desktop/Learning/GenAI/data_/Responses/XYZ Consulting.pdf"]
 
 
 if __name__ == "__main__":
