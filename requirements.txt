@@ -1,4 +1,5 @@
-﻿faiss-cpu==1.8.0
+streamlit_extras
+faiss-cpu==1.8.0
 gitdb==4.0.11
 GitPython==3.1.43
 google-ai-generativelanguage==0.6.2
