@@ -77,10 +77,10 @@ def main():
     st.title("Upload Appeal:")
     pdf_docs = st.file_uploader("Upload appeal document in PDF format and Click on the Submit & Process Button", accept_multiple_files=True, key="pdf_uploader")
     
-    if st.button("Classify the document", key="classify_button", help="Click to classify the document"):
-        user_question = "Categorize the appeal"
-        if user_question and api_key:  # Ensure API key and user question are provided
-            user_input(user_question, api_key)
+    # if st.button("Classify the document", key="classify_button", help="Click to classify the document"):
+    #     user_question = "Categorize the appeal"
+    #     if user_question and api_key:  # Ensure API key and user question are provided
+    #         user_input(user_question, api_key)
 
     with st.spinner("Processing..."):
         if st.button("Submit & Process", key="process_button", help="Click to submit and process"):
