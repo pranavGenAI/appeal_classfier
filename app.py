@@ -25,6 +25,7 @@ import io
 
 st.set_page_config(page_title="Appeal Classifier", layout="wide")
 
+st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
 st.markdown("""
     <style>
     .stButton button {
@@ -73,7 +74,6 @@ def user_input(user_question, api_key):
 
 def main():
     st.markdown("")
-    st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
     st.title("Upload Appeal:")
     pdf_docs = st.file_uploader("Upload appeal document in PDF format and Click on the Submit & Process Button", accept_multiple_files=True, key="pdf_uploader")
     
