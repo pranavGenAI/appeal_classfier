@@ -21,6 +21,7 @@ import pytesseract
 import fitz 
 from PIL import Image
 import io
+from tika import parser
 
 
 st.set_page_config(page_title="Appeal Classifier", layout="wide")
@@ -94,7 +95,8 @@ def main():
                         image_bytes = base_image["image"]
                         image_ext = base_image["ext"] 
                         image = Image.open(io.BytesIO(image_bytes))
-                        text += pytesseract.image_to_string(image)
+                        parsed = parser.from_buffer(image_bytes)
+                        text += parsed['content']
                 
                 pdf_document.close()
                 text += "\n\nResponse 2: "
