@@ -3,7 +3,7 @@ import PIL.Image
 import google.generativeai as genai
 
 # Set page title, icon, and dark theme
-st.set_page_config(page_title="Appeal Classifier: Categorize appeal document", page_icon=">", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Appeal Classifier: Categorize appeal document", page_icon=">", initial_sidebar_state="collapsed")
 st.markdown(
     """
     <style>
