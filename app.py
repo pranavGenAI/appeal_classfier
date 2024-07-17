@@ -138,7 +138,6 @@ def main():
 if __name__ == "__main__":
     if st.session_state.logged_in:
         st.sidebar.write(f"Welcome, {st.session_state.username}")
-        st.sidebar.write(f"Tokens remaining: {st.session_state.tokens_remaining}")
         if st.sidebar.button("Logout"):
             logout()
         main()
