@@ -41,32 +41,6 @@ users = {
     "admin": hash_password("admin")
 }
 
-
-TOKEN_FILE = "./data/token_counts.json"
-
-
-def read_token_counts():
-    try:
-        with open("./data/token_counts.json", "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
-
-def write_token_counts(token_counts):
-    with open("./data/token_counts.json", "w") as f:
-        json.dump(token_counts, f)
-
-
-def get_token_count(username):
-    token_counts = read_token_counts()
-    return token_counts.get(username, 1000)  # Default to 1000 tokens if not found
-
-def update_token_count(username, count):
-    token_counts = read_token_counts()
-    token_counts[username] = count
-    write_token_counts(token_counts)
-
-
 def login():
     col1, col2, col3 = st.columns([1, 1, 1])  # Create three columns with equal width
     with col2:  # Center the input fields in the middle column
