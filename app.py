@@ -70,6 +70,7 @@ def user_input(user_question, api_key):
     response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
     st.write("Response: ", response["output_text"])
 
+
 def main():
     st.markdown("")
     
@@ -77,6 +78,28 @@ def main():
         user_question = "Categorize the appeal"
         if user_question and api_key:  # Ensure API key and user question are provided
             user_input(user_question, api_key)
+
+    with st.spinner("Processing..."):
+        if st.button("Submit & Process", key="process_button", help="Click to submit and process"):
+            text = "Appeal: "
+            
+            for pdf_path in pdf_docs:
+                pdf_document = fitz.open(pdf_path)
+                for page_num in range(len(pdf_document)):
+                    page = pdf_document.load_page(page_num)
+                    images = page.get_images(full=True)
+                    for img_index, img in enumerate(images):
+                        xref = img[0]
+                        base_image = pdf_document.extract_image(xref)
+                        image_bytes = base_image["image"]
+                        image_ext = base_image["ext"] 
+                        image = Image.open(io.BytesIO(image_bytes))
+                        text += pytesseract.image_to_string(image)
+                pdf_document.close()
+                text += "\n\nResponse 2: "
+            
+            st.write(text)
+            st.success("Done")
 
 def extract_images_from_pdf(pdf_path):
     images = []
@@ -91,9 +114,6 @@ def extract_images_from_pdf(pdf_path):
             images.append(image_bytes)
     return images
 
-def ocr_image(image_bytes):
-    text = pytesseract.image_to_string(image)
-    return text
 
 
 with st.sidebar:
@@ -101,27 +121,7 @@ with st.sidebar:
     st.title("Upload Appeal:")
     pdf_docs = st.file_uploader("Upload appeal document in PDF format and Click on the Submit & Process Button", accept_multiple_files=True, key="pdf_uploader")
     #pdf_docs = ["C:/Users/pranav.baviskar/Desktop/Learning/GenAI/data_/Responses/XYZ Consulting.pdf"]
-    if st.button("Submit & Process", key="process_button", help="Click to submit and process"):
-        with st.spinner("Processing..."):
-            text = "Appeal: "
-            
-            for pdf_path in pdf_docs:
-                
-                pdf_document = fitz.open(pdf_path)
-                for page_num in range(len(pdf_document)):
-                    page = pdf_document.load_page(page_num)
-                    images = page.get_images(full=True)
-                    for img_index, img in enumerate(images):
-                        xref = img[0]
-                        base_image = pdf_document.extract_image(xref)
-                        image_bytes = base_image["image"]
-                        image_ext = base_image["ext"] 
-                        image = Image.open(io.BytesIO(image_bytes))
-                        text += ocr_image(image)
-                pdf_document.close()
-                text += "\n\nResponse 2: "
-            st.write(text)
-            st.success("Done")
+
 
 if __name__ == "__main__":
     main()
