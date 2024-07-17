@@ -27,13 +27,19 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Initialize session state
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "username" not in st.session_state:
+    st.session_state.username = ""
+
 # Configure Google Generative AI with the API key
 GOOGLE_API_KEY = "AIzaSyCiPGxwD04JwxifewrYiqzufyd25VjKBkw"
 genai.configure(api_key=GOOGLE_API_KEY)
 st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
+
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
-
 
 # Define users and hashed passwords for simplicity
 users = {
@@ -52,30 +58,16 @@ def login():
             hashed_password = hash_password(password)
             if username in users and users[username] == hashed_password:
                 st.session_state.logged_in = True
+                st.session_state.username = username
                 st.success("Logged in successfully!")
                 st.experimental_rerun()  # Refresh to show logged-in state
-                
             else:
                 st.error("Invalid username or password")
-    # Add the footer section
-    col4, col5, col6, col7, col8, col9 = st.columns([1, 1, 1, 1, 1, 1])
-    st.markdown("")
-    st.markdown("")
-    with col7:
-        st.markdown("")
-        st.markdown("")
-        st.markdown("")
-        st.write("**Design & Developed by:**")
-    with col9:
-        st.image("https://lh3.googleusercontent.com/drive-viewer/AKGpiha2TPFebW5deI-uoKPuD2Yoq_4xws137dj4LaFW3APyb_BkQ5NNKtwtH__KDr3E-_KbygMPh3D5VPqZPR5-ymj17acBxJgBLA=s2560", width=150)
-    with col8:
-        st.image("https://lh3.googleusercontent.com/drive-viewer/AKGpihZfq-IzkSSrziXqoQ8r0ypLiLPAQPW245Aq-NP6-90LEExUcBRM0L_mrr30zFXUzzN985zDpKWrcmptsWMF98vGmZjnfeEibg=s2560", width=150)
-
 
 def logout():
     # Clear session state on logout
     st.session_state.logged_in = False
-    del st.session_state.username
+    st.session_state.username = ""
     st.success("Logged out successfully!")
     st.experimental_rerun()  # Refresh to show logged-out state
 
@@ -93,7 +85,6 @@ def generate_content(image):
         Category PA TX NON ASO: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider. State Processed: TX
 
         Check the above condition and then write the classification category with the rationale.        
-
         """
         # Generate content using the image
         response = model.generate_content([prompt, image], stream=True)
