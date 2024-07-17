@@ -6,7 +6,7 @@ import hashlib
 import json
 
 # Set page title, icon, and dark theme
-st.set_page_config(page_title="Appeal Classifier: Categorize appeal document", page_icon=">")
+st.set_page_config(page_title="Appeals Classifier: Categorize appeal document", page_icon=">")
 st.markdown(
     """
     <style>
@@ -99,7 +99,7 @@ def generate_content(image):
         return None
 
 def main():
-    st.title("Appeal Classifier")
+    st.title("Appeals Classifier")
 
     # File uploader for multiple images
     uploaded_images = st.file_uploader("Upload appeal summary images", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
@@ -107,7 +107,7 @@ def main():
     if uploaded_images:
         for uploaded_image in uploaded_images:
             # Display uploaded image
-            st.image(uploaded_image, caption="Uploaded Appeal Summary", use_column_width=True)
+            st.image(uploaded_image, caption="", use_column_width=True)
 
             # Convert uploaded image to PIL image object
             image = PIL.Image.open(uploaded_image)
