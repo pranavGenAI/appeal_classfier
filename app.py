@@ -50,13 +50,13 @@ users = {
 }
 
 def login():
-    col1, col2= st.columns([1, 1])  # Create three columns with equal width
+    col1, col2= st.columns([0.8, 0.2])  # Create three columns with equal width
     with col1:  # Center the input fields in the middle column
         st.title("Login")
         st.write("Username")
         username = st.text_input("")
         st.write("Password")
-        password = st.text_input("Password", type="password")
+        password = st.text_input("", type="password")
         
         if st.button("Sign in"):
             hashed_password = hash_password(password)
