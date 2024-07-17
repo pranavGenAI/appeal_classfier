@@ -2,7 +2,7 @@ import streamlit as st
 import PIL.Image
 import google.generativeai as genai
 
-st.set_page_config(page_title="Appeal Classifier", page_icon = ">")
+st.set_page_config(page_title="Appeal Classifier                      ", page_icon = ">")
 
 # Configure Google Generative AI with the API key
 GOOGLE_API_KEY = "AIzaSyCiPGxwD04JwxifewrYiqzufyd25VjKBkw"
