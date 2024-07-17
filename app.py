@@ -92,7 +92,6 @@ def extract_images_from_pdf(pdf_path):
     return images
 
 def ocr_image(image_bytes):
-    image = Image.open(io.BytesIO(image_bytes))
     text = pytesseract.image_to_string(image)
     return text
 
@@ -101,24 +100,27 @@ with st.sidebar:
     st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
     st.title("Upload Appeal:")
     pdf_docs = st.file_uploader("Upload appeal document in PDF format and Click on the Submit & Process Button", accept_multiple_files=True, key="pdf_uploader")
+    #pdf_docs = ["C:/Users/pranav.baviskar/Desktop/Learning/GenAI/data_/Responses/XYZ Consulting.pdf"]
     if st.button("Submit & Process", key="process_button", help="Click to submit and process"):
         with st.spinner("Processing..."):
-            for pdf_doc in pdf_docs:
-                # Save uploaded file temporarily
-                with open(pdf_doc.name, "wb") as f:
-                    f.write(pdf_doc.getbuffer())
+            text = "Appeal: "
+            
+            for pdf_path in pdf_docs:
                 
-                # Extract images from PDF
-                images = extract_images_from_pdf(pdf_doc.name)
-                
-                # Extract text from each image
-                extracted_texts = [ocr_image(image) for image in images]
-                
-                # Display the extracted text
-                for idx, text in enumerate(extracted_texts):
-                    st.markdown(f"### Extracted Text from Page {idx + 1} of {pdf_doc.name}")
-                    st.write(text)
-
+                pdf_document = fitz.open(pdf_path)
+                for page_num in range(len(pdf_document)):
+                    page = pdf_document.load_page(page_num)
+                    images = page.get_images(full=True)
+                    for img_index, img in enumerate(images):
+                        xref = img[0]
+                        base_image = pdf_document.extract_image(xref)
+                        image_bytes = base_image["image"]
+                        image_ext = base_image["ext"] 
+                        image = Image.open(io.BytesIO(image_bytes))
+                        text += ocr_image(image)
+                pdf_document.close()
+                text += "\n\nResponse 2: "
+            st.write(text)
             st.success("Done")
 
 if __name__ == "__main__":
