@@ -6,7 +6,7 @@ import hashlib
 import json
 
 # Set page title, icon, and dark theme
-st.set_page_config(page_title="Appeal Classifier: Categorize appeal document", page_icon=">", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Appeal Classifier: Categorize appeal document", page_icon=">")
 st.markdown(
     """
     <style>
@@ -43,8 +43,10 @@ def hash_password(password):
 
 # Define users and hashed passwords for simplicity
 users = {
-    "tomas": hash_password("tomas123"),
-    "admin": hash_password("admin")
+    "ankur.d.shrivastav": hash_password("ankur123"),
+    "sashank.vaibhav.allu": hash_password("sashank123"),
+    "shivananda.mallya": hash_password("shiv123"),
+    "pranav.baviskar": hash_password("pranav123")
 }
 
 def login():
