@@ -84,7 +84,7 @@ def generate_content(image):
         Classification Logic:
         Category PA ASO: If funding value is either ASO, NON ERISA ASO, ADMIN, MED NEC. Part/Provider: Provider 
         Category MA ASO: If funding value is either ASO, NON ERISA ASO, ADMIN, MED NEC. Part/Provider: Participant
-        Category PA NON ASO NON PRIORITY STATES: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider
+        Category PA NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider
         Category MA OTHER NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM . Part/Provider: Participant
         Category PA TX NON ASO: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider. State Processed: TX
 
