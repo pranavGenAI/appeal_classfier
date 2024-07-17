@@ -51,18 +51,10 @@ def login():
         if st.button("Sign in"):
             hashed_password = hash_password(password)
             if username in users and users[username] == hashed_password:
-                token_counts = read_token_counts()
-                tokens_remaining = token_counts.get(username, 500)  # Default to 500 tokens if not found
                 
-                if tokens_remaining > 0:
-                    st.session_state.logged_in = True
-                    st.session_state.username = username
-                    st.session_state.tokens_remaining = tokens_remaining
-                    st.session_state.tokens_consumed = 0
-                    st.success("Logged in successfully!")
-                    st.experimental_rerun()  # Refresh to show logged-in state
-                else:
-                    st.error("No tokens remaining. Please contact support.")
+                st.success("Logged in successfully!")
+                st.experimental_rerun()  # Refresh to show logged-in state
+                
             else:
                 st.error("Invalid username or password")
     # Add the footer section
