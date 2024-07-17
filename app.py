@@ -74,7 +74,7 @@ def user_input(user_question, api_key):
 
 def main():
     st.markdown("")
-    st.title("Upload Appeal:")
+    #st.markdown("Upload Appeal:")
     pdf_docs = st.file_uploader("Upload appeal document in PDF format and Click on the Submit & Process Button", accept_multiple_files=True, key="pdf_uploader")
     
     # if st.button("Classify the document", key="classify_button", help="Click to classify the document"):
