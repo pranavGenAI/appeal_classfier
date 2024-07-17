@@ -2,20 +2,32 @@ import streamlit as st
 import PIL.Image
 import google.generativeai as genai
 
-st.set_page_config(page_title="Appeal Classifier                      ", page_icon = ">")
-
-# Configure Google Generative AI with the API key
-GOOGLE_API_KEY = "AIzaSyCiPGxwD04JwxifewrYiqzufyd25VjKBkw"
-genai.configure(api_key=GOOGLE_API_KEY)
-st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
-st.markdown("""
+# Set page title, icon, and dark theme
+st.set_page_config(page_title="Appeal Classifier: Categorize appeal document", page_icon=">", layout="wide", initial_sidebar_state="collapsed")
+st.markdown(
+    """
     <style>
     .stButton button {
         background: linear-gradient(120deg,#FF007F, #A020F0 100%) !important;
         color: white !important;
     }
+    body {
+        color: white;
+        background-color: #1E1E1E;
+    }
+    .stTextInput, .stSelectbox, .stTextArea, .stFileUploader {
+        color: white;
+        background-color: #2E2E2E;
+    }
     </style>
-    """, unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
+
+# Configure Google Generative AI with the API key
+GOOGLE_API_KEY = "AIzaSyCiPGxwD04JwxifewrYiqzufyd25VjKBkw"
+genai.configure(api_key=GOOGLE_API_KEY)
+st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
 
 # Function to interact with the Generative AI model
 def generate_content(image):
