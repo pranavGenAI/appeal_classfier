@@ -1,122 +1,140 @@
 import streamlit as st
-import base64
-from PyPDF2 import PdfReader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+import PIL.Image
 import google.generativeai as genai
-#from langchain.vectorstores import FAISS
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.chains.question_answering import load_qa_chain
-from langchain.prompts import PromptTemplate
-import os
-from langchain_community.vectorstores import FAISS
-from langchain.memory import ConversationSummaryBufferMemory
-from langchain.chains import LLMChain
-from langchain.schema import SystemMessage
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.prompts import MessagesPlaceholder
-from langchain_core.prompts import HumanMessagePromptTemplate
-from streamlit_extras.stylable_container import stylable_container
-import pytesseract
-import fitz 
-from PIL import Image
-import io
-from tika import parser
+import time
+import hashlib
+import json
 
-
-st.set_page_config(page_title="Appeal Classifier", layout="wide")
-
-st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
-st.markdown("""
+# Set page title, icon, and dark theme
+st.set_page_config(page_title="Appeals Classifier: Categorize appeal document", page_icon=">")
+st.markdown(
+    """
     <style>
     .stButton button {
         background: linear-gradient(120deg,#FF007F, #A020F0 100%) !important;
         color: white !important;
     }
+    body {
+        color: white;
+        background-color: #1E1E1E;
+    }
+    .stTextInput, .stSelectbox, .stTextArea, .stFileUploader {
+        color: white;
+        background-color: #2E2E2E;
+    }
     </style>
-    """, unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
 
+# Initialize session state
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "username" not in st.session_state:
+    st.session_state.username = ""
 
-st.markdown("""
-   
-    <h1>
-        Appeal Classifier
-    </h1>
-""", unsafe_allow_html=True)
+# Configure Google Generative AI with the API key
+GOOGLE_API_KEY = "AIzaSyCiPGxwD04JwxifewrYiqzufyd25VjKBkw"
+genai.configure(api_key=GOOGLE_API_KEY)
+st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
 
-api_key = 'AIzaSyA0yf3m_e7Oot_tY7WsQnlUnpLJ-041Bvk'
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 
+# Define users and hashed passwords for simplicity
+users = {
+    "ankur.d.shrivastav": hash_password("ankur123"),
+    "sashank.vaibhav.allu": hash_password("sashank123"),
+    "shivananda.mallya": hash_password("shiv123"),
+    "pranav.baviskar": hash_password("pranav123")
+}
 
-def get_conversational_chain():
-    prompt_template = """
-    
-    Context:\n {context}?\n
-    Question: \n{question}\n . 
+def login():
+    col1, col2= st.columns([0.6, 0.4])  # Create three columns with equal width
+    with col1:  # Center the input fields in the middle column
+        st.title("Login")
+        st.write("Username")
+        username = st.text_input("")
+        st.write("Password")
+        password = st.text_input("", type="password")
+        
+        if st.button("Sign in"):
+            hashed_password = hash_password(password)
+            if username in users and users[username] == hashed_password:
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.success("Logged in successfully!")
+                st.experimental_rerun()  # Refresh to show logged-in state
+            else:
+                st.error("Invalid username or password")
 
-    Answer:
-    """
-    model = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.3, google_api_key=api_key)
-    prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
-    print("Prompt ***** --->", prompt)
-    chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
-    return chain
+def logout():
+    # Clear session state on logout
+    st.session_state.logged_in = False
+    st.session_state.username = ""
+    st.success("Logged out successfully!")
+    st.experimental_rerun()  # Refresh to show logged-out state
 
-def user_input(user_question, api_key):
-    # Embeddings and vector store initialization omitted for brevity
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=api_key)
-    new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
-    
-    # Perform similarity search and get response
-    docs = new_db.similarity_search(user_question)
-    chain = get_conversational_chain()
-    response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
-    st.write("Response: ", response["output_text"])
+# Function to interact with the Generative AI model
+def generate_content(image):
+    try:
+        # Initialize the GenerativeModel
+        model = genai.GenerativeModel('gemini-1.5-pro')
+        prompt = """You have been given appeal summary as input. Now you will help me in classifying the the provided appeal summary using the logic provided to you.
+        Classification Logic:
+        Category PA ASO: If funding value is either ASO, NON ERISA ASO, ADMIN, MED NEC. Part/Provider: Provider 
+        Category MA ASO: If funding value is either ASO, NON ERISA ASO, ADMIN, MED NEC. Part/Provider: Participant
+        Category PA NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider
+        Category MA OTHER NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM . Part/Provider: Participant
+        Category PA TX NON ASO: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider. State Processed: TX
 
+        Check the above condition and then write the classification category with the rationale.        
+        """
+        # Generate content using the image
+        response = model.generate_content([prompt, image], stream=True)
+        response.resolve()
+        return response.text  # Return generated text
+    except Exception as e:
+        st.error(f"Error generating content: {e}")
+        return None
 
 def main():
-    st.markdown("")
-    pdf_docs = st.file_uploader("Upload appeal document in PDF format and Click on the Submit & Process Button", accept_multiple_files=True, key="pdf_uploader")
-    
-    with st.spinner("Processing..."):
-        if st.button("Submit & Process", key="process_button", help="Click to submit and process"):
-            text = "Appeal: "
-            
-            for pdf_data in pdf_docs:
-                pdf_bytes = pdf_data.read()
-                pdf_document = fitz.open(stream=pdf_bytes, filetype="bytes")
-                
-                for page_num in range(len(pdf_document)):
-                    page = pdf_document.load_page(page_num)
-                    images = page.get_images(full=True)
-                    
-                    for img_index, img in enumerate(images):
-                        xref = img[0]
-                        base_image = pdf_document.extract_image(xref)
-                        image_bytes = base_image["image"]
-                        image_ext = base_image["ext"] 
-                        image = Image.open(io.BytesIO(image_bytes))
-                        parsed = parser.from_buffer(image_bytes)
-                        text += parsed['content']
-                
-                pdf_document.close()
-                text += "\n\nResponse 2: "
-            
-            st.write(text)
-            st.success("Done")
+    st.title("Appeals Classifier")
 
-def extract_images_from_pdf(pdf_path):
-    images = []
-    pdf_document = fitz.open(pdf_path)
-    for page_num in range(len(pdf_document)):
-        page = pdf_document.load_page(page_num)
-        image_list = page.get_images(full=True)
-        for img_index, img in enumerate(image_list):
-            xref = img[0]
-            base_image = pdf_document.extract_image(xref)
-            image_bytes = base_image["image"]
-            images.append(image_bytes)
-    return images
+    # File uploader for multiple images
+    uploaded_images = st.file_uploader("Upload appeal summary images", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
 
+    if uploaded_images:
+        for uploaded_image in uploaded_images:
+            # Display uploaded image
+            st.image(uploaded_image, caption="", use_column_width=True)
+
+            # Convert uploaded image to PIL image object
+            image = PIL.Image.open(uploaded_image)
+
+            # Determine button label based on number of uploaded images
+            if len(uploaded_images) > 1:
+                button_label = f"Classify Appeal {uploaded_images.index(uploaded_image) + 1}"
+            else:
+                button_label = "Classify Appeal"
+
+            # Button to classify appeal
+            if st.button(button_label):
+                with st.spinner("Evaluating..."):
+                    # Generate content using the image
+                    generated_text = generate_content(image)
+
+                    # Display generated content
+                    if generated_text:
+                        st.subheader("Classification:")
+                        st.write(generated_text)
+                        st.markdown("***")
 
 if __name__ == "__main__":
-    main()
+    if st.session_state.logged_in:
+        st.sidebar.write(f"Welcome, {st.session_state.username}")
+        if st.sidebar.button("Logout"):
+            logout()
+        main()
+    else:
+        login()
