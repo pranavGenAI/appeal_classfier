@@ -1,3 +1,6 @@
 google-generativeai
 streamlit
 streamlit_extras
+torch
+Pillow
+transformers
