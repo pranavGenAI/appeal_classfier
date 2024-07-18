@@ -34,7 +34,7 @@ if "username" not in st.session_state:
     st.session_state.username = ""
 
 # Configure Google Generative AI with the API key
-GOOGLE_API_KEY = "AIzaSyA0yf3m_e7Oot_tY7WsQnlUnpLJ-041Bvk"
+GOOGLE_API_KEY = "AIzaSyCNX1H0w4y7dJPlwqvrxiW1OjAMf4dkFp0"
 genai.configure(api_key=GOOGLE_API_KEY)
 st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
 
