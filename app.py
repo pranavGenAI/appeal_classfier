@@ -34,7 +34,7 @@ if "username" not in st.session_state:
     st.session_state.username = ""
 
 # Configure Google Generative AI with the API key
-GOOGLE_API_KEY = "AIzaSyBr83H2x6poOmG6GkeyaaTwX1E2wX0sfC4"
+GOOGLE_API_KEY = "AIzaSyCiPGxwD04JwxifewrYiqzufyd25VjKBkw"
 genai.configure(api_key=GOOGLE_API_KEY)
 st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
 
@@ -54,9 +54,9 @@ def login():
     with col1:  # Center the input fields in the middle column
         st.title("Login")
         st.write("Username")
-        username = st.text_input("")
+        username = st.text_input("",  label_visibility="collapsed")
         st.write("Password")
-        password = st.text_input("", type="password")
+        password = st.text_input("", type="password",  label_visibility="collapsed")
         
         if st.button("Sign in"):
             hashed_password = hash_password(password)
@@ -79,6 +79,8 @@ def logout():
 def generate_content(image):
     try:
         # Initialize the GenerativeModel
+        
+        print("Model definition")
         model = genai.GenerativeModel('gemini-1.5-pro')
         prompt = """You have been given appeal summary as input. Now you will help me in classifying the the provided appeal summary using the logic provided to you.
         Classification Logic:
@@ -91,8 +93,10 @@ def generate_content(image):
         Check the above condition and then write the classification category with the rationale.        
         """
         # Generate content using the image
+        print("Model generate")
         response = model.generate_content([prompt, image], stream=True)
         response.resolve()
+        print("Response text" , response.text)
         return response.text  # Return generated text
     except Exception as e:
         st.error(f"Error generating content: {e}")
