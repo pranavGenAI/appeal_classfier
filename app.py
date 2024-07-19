@@ -77,6 +77,10 @@ def logout():
     st.experimental_rerun()  # Refresh to show logged-out state
 
 # Function to interact with the Generative AI model
+import time
+import streamlit as st
+import genai  # Assuming this is the correct import for the GenerativeModel
+
 def generate_content(image):
     max_retries = 4
     delay = 2
@@ -86,12 +90,12 @@ def generate_content(image):
             # Initialize the GenerativeModel
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
-            prompt = """You have been given appeal summary as input. Now you will help me in classifying the the provided appeal summary using the logic provided to you.
+            prompt = """You have been given appeal summary as input. Now you will help me in classifying the provided appeal summary using the logic provided to you.
             Classification Logic:
             Category PA ASO: If funding value is either ASO, NON ERISA ASO, ADMIN, MED NEC. Part/Provider: Provider 
             Category MA ASO: If funding value is either ASO, NON ERISA ASO, ADMIN, MED NEC. Part/Provider: Participant
             Category PA NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider
-            Category MA OTHER NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM . Part/Provider: Participant
+            Category MA OTHER NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM. Part/Provider: Participant
             Category PA TX NON ASO: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider. State Processed: TX
     
             Check the above condition and then write the classification category with the rationale.        
@@ -103,12 +107,14 @@ def generate_content(image):
             print("Response text", response.text)
             return response.text  # Return generated text
         except Exception as e:
-            st.error(f"Error generating content: {e}")
-            time.sleep(delay)
             retry_count += 1
+            if retry_count == max_retries:
+                st.error(f"Error generating content: Server not available. Please try again after sometime")
+            time.sleep(delay)
     
     # Return None if all retries fail
     return None
+
 
 def main():
     st.title("Appeals Classifier")
