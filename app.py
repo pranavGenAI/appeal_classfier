@@ -105,9 +105,9 @@ def generate_content(image):
             return response.text  # Return generated text
         except Exception as e:
             st.error(f"Error generating content: {e}")
+            time.sleep(delay)
+            retry_count += 1
             return None
-        time.sleep(delay)
-        retry_count += 1
 def main():
     st.title("Appeals Classifier")
 
