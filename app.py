@@ -77,8 +77,8 @@ def logout():
     st.experimental_rerun()  # Refresh to show logged-out state
 
 def generate_content(image):
-    max_retries = 4
-    delay = 6
+    max_retries = 6
+    delay = 10
     retry_count = 0
     while retry_count < max_retries:
         try:
