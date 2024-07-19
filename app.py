@@ -78,31 +78,36 @@ def logout():
 
 # Function to interact with the Generative AI model
 def generate_content(image):
-    try:
-        # Initialize the GenerativeModel
-        
-        print("Model definition")
-        model = genai.GenerativeModel('gemini-1.5-pro')
-        prompt = """You have been given appeal summary as input. Now you will help me in classifying the the provided appeal summary using the logic provided to you.
-        Classification Logic:
-        Category PA ASO: If funding value is either ASO, NON ERISA ASO, ADMIN, MED NEC. Part/Provider: Provider 
-        Category MA ASO: If funding value is either ASO, NON ERISA ASO, ADMIN, MED NEC. Part/Provider: Participant
-        Category PA NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider
-        Category MA OTHER NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM . Part/Provider: Participant
-        Category PA TX NON ASO: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider. State Processed: TX
-
-        Check the above condition and then write the classification category with the rationale.        
-        """
-        # Generate content using the image
-        print("Model generate")
-        response = model.generate_content([prompt, image], stream=True)
-        response.resolve()
-        print("Response text" , response.text)
-        return response.text  # Return generated text
-    except Exception as e:
-        st.error(f"Error generating content: {e}")
-        return None
-
+    max_retries = 4
+    delay = 2
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            # Initialize the GenerativeModel
+            
+            print("Model definition")
+            model = genai.GenerativeModel('gemini-1.5-pro')
+            prompt = """You have been given appeal summary as input. Now you will help me in classifying the the provided appeal summary using the logic provided to you.
+            Classification Logic:
+            Category PA ASO: If funding value is either ASO, NON ERISA ASO, ADMIN, MED NEC. Part/Provider: Provider 
+            Category MA ASO: If funding value is either ASO, NON ERISA ASO, ADMIN, MED NEC. Part/Provider: Participant
+            Category PA NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider
+            Category MA OTHER NON ASO PRIORITY STATES: If funding value is either TRAD, CMP, RCM . Part/Provider: Participant
+            Category PA TX NON ASO: If funding value is either TRAD, CMP, RCM. Part/Provider: Provider. State Processed: TX
+    
+            Check the above condition and then write the classification category with the rationale.        
+            """
+            # Generate content using the image
+            print("Model generate")
+            response = model.generate_content([prompt, image], stream=True)
+            response.resolve()
+            print("Response text" , response.text)
+            return response.text  # Return generated text
+        except Exception as e:
+            st.error(f"Error generating content: {e}")
+            return None
+        time.sleep(delay)
+        retry_count += 1
 def main():
     st.title("Appeals Classifier")
 
