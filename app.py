@@ -78,7 +78,7 @@ def logout():
 
 def generate_content(image):
     max_retries = 4
-    delay = 2
+    delay = 3
     retry_count = 0
     while retry_count < max_retries:
         try:
