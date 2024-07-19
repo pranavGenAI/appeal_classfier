@@ -84,7 +84,6 @@ def generate_content(image):
     while retry_count < max_retries:
         try:
             # Initialize the GenerativeModel
-            
             print("Model definition")
             model = genai.GenerativeModel('gemini-1.5-pro')
             prompt = """You have been given appeal summary as input. Now you will help me in classifying the the provided appeal summary using the logic provided to you.
@@ -101,13 +100,16 @@ def generate_content(image):
             print("Model generate")
             response = model.generate_content([prompt, image], stream=True)
             response.resolve()
-            print("Response text" , response.text)
+            print("Response text", response.text)
             return response.text  # Return generated text
         except Exception as e:
             st.error(f"Error generating content: {e}")
             time.sleep(delay)
             retry_count += 1
-            return None
+    
+    # Return None if all retries fail
+    return None
+
 def main():
     st.title("Appeals Classifier")
 
