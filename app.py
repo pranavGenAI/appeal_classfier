@@ -76,11 +76,6 @@ def logout():
     st.success("Logged out successfully!")
     st.experimental_rerun()  # Refresh to show logged-out state
 
-# Function to interact with the Generative AI model
-import time
-import streamlit as st
-import genai  # Assuming this is the correct import for the GenerativeModel
-
 def generate_content(image):
     max_retries = 4
     delay = 2
