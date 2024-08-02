@@ -65,7 +65,7 @@ def login():
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.success("Logged in successfully!")
-                st.experimental_rerun()  # Refresh to show logged-in state
+                st.rerun()  # Refresh to show logged-in state
             else:
                 st.error("Invalid username or password")
 
@@ -74,7 +74,7 @@ def logout():
     st.session_state.logged_in = False
     st.session_state.username = ""
     st.success("Logged out successfully!")
-    st.experimental_rerun()  # Refresh to show logged-out state
+    st.rerun()  # Refresh to show logged-out state
 
 def generate_content(image):
     max_retries = 10
