@@ -207,13 +207,11 @@ st.markdown(
     }
 
     .generated-text-box {
-        border: 3px solid transparent; /* Set border to transparent to use background for the border */
-        padding: 20px;
+        border: 3px solid #A020F0; /* Thick border */
+        padding: 20px;  
         border-radius: 10px; /* Rounded corners */
         color: black; /* Text color */
-        background-image: linear-gradient(120deg, #FF007F, #A020F0); /* Gradient background */
-        background-clip: padding-box; /* Ensure the gradient does not cover the border area */
-        border-image: linear-gradient(120deg, #FF007F, #A020F0) 1; /* Gradient border */
+        background-color: #FFFFFF; /* Background color matching theme */
     }
     </style>
     """,
