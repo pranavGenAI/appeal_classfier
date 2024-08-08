@@ -49,7 +49,7 @@ users = {
 }
 
 def login():
-    col1, col2= st.columns([0.6, 0.4])  # Create three columns with equal width
+    col1, col2= st.columns([0.3, 0.7])  # Create three columns with equal width
     with col1:  # Center the input fields in the middle column
         st.title("Login")
         st.write("Username")
