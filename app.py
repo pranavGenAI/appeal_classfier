@@ -209,6 +209,7 @@ st.markdown(
     .generated-text-box {
         border: 3px solid #A020F0; /* Thick border */
         padding: 20px;  
+        background-color: #FFFFFF;
         border-radius: 10px; /* Rounded corners */
         color: black; /* Text color */
     }
