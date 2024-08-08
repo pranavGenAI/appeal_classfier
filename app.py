@@ -4,9 +4,8 @@ import google.generativeai as genai
 import time
 import hashlib
 import json
-
 # Set page title, icon, and dark theme
-st.set_page_config(page_title="Appeals Classifier: Categorize appeal document", page_icon=">")
+st.set_page_config(page_title="Appeals Classifier: Categorize appeal document", page_icon=">", layout="wide")
 st.markdown(
     """
     <style>
@@ -34,10 +33,9 @@ if "username" not in st.session_state:
     st.session_state.username = ""
 
 # Configure Google Generative AI with the API key
-GOOGLE_API_KEY = st.secrets['GEMINI_API_KEY']
-#GOOGLE_API_KEY = "AIzaSyCiPGxwD04JwxifewrYiqzufyd25VjKBkw"
+#GOOGLE_API_KEY = st.secrets['GEMINI_API_KEY']
+GOOGLE_API_KEY = "AIzaSyCiPGxwD04JwxifewrYiqzufyd25VjKBkw"
 genai.configure(api_key=GOOGLE_API_KEY)
-st.image("https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png", width=150)
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -76,6 +74,9 @@ def logout():
     st.success("Logged out successfully!")
     st.rerun()  # Refresh to show logged-out state
 
+# Path to the logo image
+logo_url = "https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png"
+
 def generate_content(image):
     max_retries = 10
     delay = 10
@@ -110,44 +111,123 @@ def generate_content(image):
     # Return None if all retries fail
     return None
 
-
 def main():
     st.title("Appeals Classifier")
+    col1, col2, col3 = st.columns([4,1,4])
+    generated_text = ""
+    with col1:
+        # File uploader for multiple images
+        uploaded_images = st.file_uploader("Upload appeal summary images", type=["jpg", "jpeg", "png"], accept_multiple_files=True)   
+        if uploaded_images:
+            for uploaded_image in uploaded_images:
+                # Convert uploaded image to PIL image object
+                image = PIL.Image.open(uploaded_image)
 
-    # File uploader for multiple images
-    uploaded_images = st.file_uploader("Upload appeal summary images", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
+                # Determine button label based on number of uploaded images
+                if len(uploaded_images) > 1:
+                    button_label = f"Classify Appeal {uploaded_images.index(uploaded_image) + 1}"
+                else:
+                    button_label = "Classify Appeal"
 
-    if uploaded_images:
-        for uploaded_image in uploaded_images:
-            # Display uploaded image
-            st.image(uploaded_image, caption="", use_column_width=True)
+                # Button to classify appeal
+                if st.button(button_label):
+                    with st.spinner("Evaluating..."):
+                        # Generate content using the image
+                        generated_text = generate_content(image)
 
-            # Convert uploaded image to PIL image object
-            image = PIL.Image.open(uploaded_image)
-
-            # Determine button label based on number of uploaded images
-            if len(uploaded_images) > 1:
-                button_label = f"Classify Appeal {uploaded_images.index(uploaded_image) + 1}"
-            else:
-                button_label = "Classify Appeal"
-
-            # Button to classify appeal
-            if st.button(button_label):
-                with st.spinner("Evaluating..."):
-                    # Generate content using the image
-                    generated_text = generate_content(image)
-
-                    # Display generated content
-                    if generated_text:
-                        st.subheader("Classification:")
-                        st.write(generated_text)
-                        st.markdown("***")
+                st.image(uploaded_image, caption="", use_column_width=True)
+    
+    with col3:
+        if generated_text:
+            st.markdown(
+                f"""
+                <div class="generated-text-box">
+                    <h3>Classification Result:</h3>
+                    <p>{generated_text}</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown("***")
 
 if __name__ == "__main__":
     if st.session_state.logged_in:
-        st.sidebar.write(f"Welcome, {st.session_state.username}")
-        if st.sidebar.button("Logout"):
+        if st.button("Logout"):
             logout()
         main()
     else:
         login()
+
+
+# Custom CSS for the header and logo
+# Custom CSS for the header and logo
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Graphik:wght@400;700&display=swap');
+
+    body {
+        background-color: #f0f0f0;
+        color: black;
+        font-family: 'Graphik', sans-serif;
+    }
+    .main {
+        background-color: #f0f0f0;
+    }
+    .stApp {
+        background-color: #f0f0f0;
+    }
+    header {
+        background-color: #660094 !important;
+        padding: 10px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .logo {
+        height: 30px;
+        width: auto;
+        margin-right: 20px;  /* Space between logo and next item */
+    }
+    .header-content {
+        display: flex;
+        align-items: center;
+    }
+    .header-right {
+        display: flex;
+        align-items: center;
+    }
+
+    h1 {
+        color: black;
+        margin: 0;
+        padding: 0;
+    }
+
+    .generated-text-box {
+        border: 3px solid #A020F0; /* Thick border */
+        padding: 20px;  
+        border-radius: 10px; /* Rounded corners */
+        color: black; /* Text color */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# Adding the logo and other elements in the header
+st.markdown(
+    f"""
+    <header tabindex="-1" data-testid="stHeader" class="st-emotion-cache-12fmjuu ezrtsby2">
+        <div data-testid="stDecoration" id="stDecoration" class="st-emotion-cache-1dp5vir ezrtsby1"></div>
+        <div class="header-content">
+            <!-- Add the logo here -->
+            <img src="https://www.vgen.it/wp-content/uploads/2021/04/logo-accenture-ludo.png" class="logo" alt="Logo">
+        
+    </header>
+
+    """,
+    unsafe_allow_html=True
+)
+
