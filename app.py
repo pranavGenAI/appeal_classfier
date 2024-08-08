@@ -152,7 +152,7 @@ def main():
 
 if __name__ == "__main__":
     if st.session_state.logged_in:
-        col1,col2,col3 = st.columns([10,10,2])
+        col1,col2,col3 = st.columns([10,10,1])
         with col3:
             if st.button("Logout"):
                 logout()
